@@ -38,22 +38,31 @@ import {
   tokenRefreshSelector
 } from "../features/fastLogin/store/selectors";
 import { watchFciSaga } from "../features/fci/saga";
+import { watchFimsSaga } from "../features/fims/common/saga";
 import { watchIDPaySaga } from "../features/idpay/common/saga";
-import { checkPublicKeyAndBlockIfNeeded } from "../features/lollipop/navigation";
-import {
-  checkLollipopSessionAssertionAndInvalidateIfNeeded,
-  generateLollipopKeySaga,
-  getKeyInfo
-} from "../features/lollipop/saga";
-import { lollipopPublicKeySelector } from "../features/lollipop/store/reducers/lollipop";
+import { isBlockingScreenSelector } from "../features/ingress/store/selectors";
+import { watchItwSaga } from "../features/itwallet/common/saga";
+import { generateLollipopKeySaga, getKeyInfo } from "../features/lollipop/saga";
+import { handleIsKeyStrongboxBacked } from "../features/lollipop/utils/crypto";
 import { watchMessagesSaga } from "../features/messages/saga";
 import { handleClearAllAttachments } from "../features/messages/saga/handleClearAttachments";
-import { watchPnSaga } from "../features/pn/store/sagas/watchPnSaga";
+import { watchNewProfileSaga } from "../features/newProfile/store/sagas";
+import { watchWalletSaga as watchNewWalletSaga } from "../features/newWallet/saga";
 import { watchPaymentsSaga } from "../features/payments/common/saga";
+import { watchPnSaga } from "../features/pn/store/sagas/watchPnSaga";
+import { handlePendingMessageStateIfAllowed } from "../features/pushNotifications/sagas/common";
+import { notificationPermissionsListener } from "../features/pushNotifications/sagas/notificationPermissionsListener";
+import { profileAndSystemNotificationsPermissions } from "../features/pushNotifications/sagas/profileAndSystemNotificationsPermissions";
+import { pushNotificationTokenUpload } from "../features/pushNotifications/sagas/pushNotificationTokenUpload";
+import { cancellAllLocalNotifications } from "../features/pushNotifications/utils";
+import { watchServicesSaga } from "../features/services/common/saga";
+import { handleApplicationStartupTransientError } from "../features/startup/sagas";
+import { watchTrialSystemSaga } from "../features/trialSystem/store/sagas/watchTrialSystemSaga";
 import {
   watchGetZendeskTokenSaga,
   watchZendeskGetSessionSaga
 } from "../features/zendesk/saga";
+import { formatRequestedTokenString } from "../features/zendesk/utils";
 import I18n from "../i18n";
 import { mixpanelTrack } from "../mixpanel";
 import NavigationService from "../navigation/NavigationService";
@@ -74,6 +83,7 @@ import {
   startupTransientError
 } from "../store/actions/startup";
 import { loadUserDataProcessing } from "../store/actions/userDataProcessing";
+import { walletPaymentHandlersInitialized } from "../store/actions/wallet/payment";
 import {
   sessionInfoSelector,
   sessionTokenSelector
@@ -96,26 +106,11 @@ import {
   StartupStatusEnum,
   startupTransientErrorInitialState
 } from "../store/reducers/startup";
+import { watchEmailValidationSaga } from "../store/sagas/emailValidationPollingSaga";
 import { ReduxSagaEffect, SagaCallReturnType } from "../types/utils";
 import { trackKeychainGetFailure } from "../utils/analytics";
 import { isTestEnv } from "../utils/environment";
-import { walletPaymentHandlersInitialized } from "../store/actions/wallet/payment";
-import { watchFimsSaga } from "../features/fims/common/saga";
 import { deletePin, getPin } from "../utils/keychain";
-import { watchEmailValidationSaga } from "../store/sagas/emailValidationPollingSaga";
-import { handleIsKeyStrongboxBacked } from "../features/lollipop/utils/crypto";
-import { watchWalletSaga as watchNewWalletSaga } from "../features/newWallet/saga";
-import { watchServicesSaga } from "../features/services/common/saga";
-import { watchItwSaga } from "../features/itwallet/common/saga";
-import { watchTrialSystemSaga } from "../features/trialSystem/store/sagas/watchTrialSystemSaga";
-import { notificationPermissionsListener } from "../features/pushNotifications/sagas/notificationPermissionsListener";
-import { profileAndSystemNotificationsPermissions } from "../features/pushNotifications/sagas/profileAndSystemNotificationsPermissions";
-import { pushNotificationTokenUpload } from "../features/pushNotifications/sagas/pushNotificationTokenUpload";
-import { handlePendingMessageStateIfAllowed } from "../features/pushNotifications/sagas/common";
-import { cancellAllLocalNotifications } from "../features/pushNotifications/utils";
-import { handleApplicationStartupTransientError } from "../features/startup/sagas";
-import { formatRequestedTokenString } from "../features/zendesk/utils";
-import { isBlockingScreenSelector } from "../features/ingress/store/selectors";
 import {
   clearKeychainError,
   keychainError
@@ -143,6 +138,7 @@ import { checkAcknowledgedEmailSaga } from "./startup/checkAcknowledgedEmailSaga
 import { checkConfiguredPinSaga } from "./startup/checkConfiguredPinSaga";
 import { watchEmailNotificationPreferencesSaga } from "./startup/checkEmailNotificationPreferencesSaga";
 import { checkEmailSaga } from "./startup/checkEmailSaga";
+import { checkItWalletIdentitySaga } from "./startup/checkItWalletIdentitySaga";
 import { checkProfileEnabledSaga } from "./startup/checkProfileEnabledSaga";
 import { completeOnboardingSaga } from "./startup/completeOnboardingSaga";
 import { loadSessionInformationSaga } from "./startup/loadSessionInformationSaga";
@@ -154,7 +150,6 @@ import {
 } from "./startup/watchCheckSessionSaga";
 import { watchLogoutSaga } from "./startup/watchLogoutSaga";
 import { watchSessionExpiredSaga } from "./startup/watchSessionExpiredSaga";
-import { checkItWalletIdentitySaga } from "./startup/checkItWalletIdentitySaga";
 import { watchUserDataProcessingSaga } from "./user/userDataProcessing";
 import { watchWalletSaga } from "./wallet";
 import { watchProfileEmailValidationChangedSaga } from "./watchProfileEmailValidationChangedSaga";
@@ -236,10 +231,10 @@ export function* initializeApplicationSaga(
   // since it must make sure to have the latest in-memory value
   // (as an example, during the authentication saga the key may have been regenerated multiple times)
   // #LOLLIPOP_CHECK_BLOCK1_START
-  const unsupportedDevice = yield* call(checkPublicKeyAndBlockIfNeeded);
-  if (unsupportedDevice) {
-    return;
-  }
+  //   const unsupportedDevice = yield* call(checkPublicKeyAndBlockIfNeeded);
+  //   if (unsupportedDevice) {
+  //     return;
+  //   }
   // #LOLLIPOP_CHECK_BLOCK1_END
 
   // Since the backend.json is done in parallel with the startup saga,
@@ -380,17 +375,19 @@ export function* initializeApplicationSaga(
     }
   }
 
-  const publicKey = yield* select(lollipopPublicKeySelector);
+  // const publicKey = yield* select(lollipopPublicKeySelector);
+
+  yield* fork(watchNewProfileSaga, backendClient.getProfile);
 
   // #LOLLIPOP_CHECK_BLOCK2_START
-  const isAssertionRefValid = yield* call(
-    checkLollipopSessionAssertionAndInvalidateIfNeeded,
-    publicKey,
-    maybeSessionInformation
-  );
-  if (!isAssertionRefValid) {
-    return;
-  }
+  //   const isAssertionRefValid = yield* call(
+  //     checkLollipopSessionAssertionAndInvalidateIfNeeded,
+  //     publicKey,
+  //     maybeSessionInformation
+  //   );
+  //   if (!isAssertionRefValid) {
+  //     return;
+  //   }
   // #LOLLIPOP_CHECK_BLOCK2_END
 
   // Start watching for profile update requests as the checkProfileEnabledSaga

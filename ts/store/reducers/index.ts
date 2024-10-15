@@ -16,9 +16,18 @@ import {
 import { isActionOf } from "typesafe-actions";
 import { versionInfoReducer } from "../../common/versionInfo/store/reducers/versionInfo";
 import bonusReducer from "../../features/bonus/common/store/reducers";
+import { cieLoginInitialState } from "../../features/cieLogin/store/reducers";
 import { featuresPersistor } from "../../features/common/store/reducers";
+import { fastLoginOptInInitialState } from "../../features/fastLogin/store/reducers/optInReducer";
+import { itwIdentificationInitialState } from "../../features/itwallet/identification/store/reducers";
 import { lollipopPersistor } from "../../features/lollipop/store";
 import { initialLollipopState } from "../../features/lollipop/store/reducers/lollipop";
+import newProfileReducer from "../../features/newProfile/store/reducers";
+import { profileSettingsReducerInitialState } from "../../features/profileSettings/store/reducers";
+import { persistedNotificationsReducer } from "../../features/pushNotifications/store/reducers";
+import { trialSystemActivationStatusReducer } from "../../features/trialSystem/store/reducers";
+import { whatsNewInitialState } from "../../features/whatsnew/store/reducers";
+import { isDevEnv } from "../../utils/environment";
 import {
   logoutFailure,
   logoutSuccess,
@@ -27,19 +36,11 @@ import {
 import { Action } from "../actions/types";
 import createSecureStorage from "../storages/keychain";
 import { DateISO8601Transform } from "../transforms/dateISO8601Tranform";
-import { whatsNewInitialState } from "../../features/whatsnew/store/reducers";
-import { fastLoginOptInInitialState } from "../../features/fastLogin/store/reducers/optInReducer";
-import { isDevEnv } from "../../utils/environment";
-import { trialSystemActivationStatusReducer } from "../../features/trialSystem/store/reducers";
-import { persistedNotificationsReducer } from "../../features/pushNotifications/store/reducers";
-import { profileSettingsReducerInitialState } from "../../features/profileSettings/store/reducers";
-import { itwIdentificationInitialState } from "../../features/itwallet/identification/store/reducers";
-import { cieLoginInitialState } from "../../features/cieLogin/store/reducers";
 import appStateReducer from "./appState";
 import assistanceToolsReducer from "./assistanceTools";
 import authenticationReducer, {
-  AuthenticationState,
-  INITIAL_STATE as authenticationInitialState
+  INITIAL_STATE as authenticationInitialState,
+  AuthenticationState
 } from "./authentication";
 import backendStatusReducer from "./backendStatus";
 import backoffErrorReducer from "./backoffError";
@@ -55,9 +56,9 @@ import entitiesReducer, {
   EntitiesState
 } from "./entities";
 import identificationReducer, {
-  IdentificationState,
   fillShowLockModal,
-  INITIAL_STATE as identificationInitialState
+  INITIAL_STATE as identificationInitialState,
+  IdentificationState
 } from "./identification";
 import installationReducer from "./installation";
 import { navigationReducer } from "./navigation";
@@ -156,6 +157,7 @@ export const appReducer: Reducer<GlobalState, Action> = combineReducers<
   onboarding: onboardingReducer,
   notifications: persistedNotificationsReducer,
   profile: profileReducer,
+  newProfile: newProfileReducer,
   userDataProcessing: userDataProcessingReducer,
   entities: persistReducer<EntitiesState, Action>(
     entitiesPersistConfig,

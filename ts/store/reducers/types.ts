@@ -4,8 +4,9 @@ import { VersionInfoState } from "../../common/versionInfo/store/reducers/versio
 import { BonusState } from "../../features/bonus/common/store/reducers";
 import { PersistedFeaturesState } from "../../features/common/store/reducers";
 import { PersistedLollipopState } from "../../features/lollipop/store";
-import { TrialSystemState } from "../../features/trialSystem/store/reducers";
+import { NewProfileState } from "../../features/newProfile/store/reducers";
 import { PersistedNotificationsState } from "../../features/pushNotifications/store/reducers";
+import { TrialSystemState } from "../../features/trialSystem/store/reducers";
 import { AppState } from "./appState";
 import { AssistanceToolsState } from "./assistanceTools";
 import { PersistedAuthenticationState } from "./authentication";
@@ -26,9 +27,9 @@ import { PersistedPreferencesState } from "./persistedPreferences";
 import { PreferencesState } from "./preferences";
 import { ProfileState } from "./profile";
 import { SearchState } from "./search";
+import { StartupState } from "./startup";
 import { UserDataProcessingState } from "./userDataProcessing";
 import { WalletState } from "./wallet";
-import { StartupState } from "./startup";
 
 export type GlobalState = Readonly<{
   appState: AppState;
@@ -60,6 +61,7 @@ export type GlobalState = Readonly<{
   startup: StartupState;
   lollipop: PersistedLollipopState;
   trialSystem: TrialSystemState;
+  newProfile: NewProfileState;
 }>;
 
 export type PersistedGlobalState = GlobalState & PersistPartial;
