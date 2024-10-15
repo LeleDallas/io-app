@@ -10,19 +10,19 @@ export type NewProfileState = pot.Pot<NewProfile, NetworkError>;
 export const initialState: NewProfileState = pot.none;
 
 const reducer = (
-    state: NewProfileState = initialState,
-    action: Action
+  state: NewProfileState = initialState,
+  action: Action
 ): NewProfileState => {
-    switch (action.type) {
-        case getType(newProfileActions.request):
-            return pot.toLoading(state);
-        case getType(newProfileActions.success):
-            return pot.some(action.payload);
-        case getType(newProfileActions.failure):
-            return pot.toError(state, action.payload);
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case getType(newProfileActions.request):
+      return pot.toLoading(state);
+    case getType(newProfileActions.success):
+      return pot.some(action.payload);
+    case getType(newProfileActions.failure):
+      return pot.toError(state, action.payload);
+    default:
+      return state;
+  }
 };
 
 export default reducer;
