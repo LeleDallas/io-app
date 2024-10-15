@@ -4126,3 +4126,7 @@ FIMS:
       body: "Per consentirti di accedere al servizio esterno senza autenticarti nuovamente con SPID o CIE, l’app IO condivide un set di dati con l’ente che lo eroga."
       body2: "I tuoi dati sono al sicuro e saranno trattati solo per le finalità indicate dall’ente e consultabili nell’ "
       bodyPrivacy: "Informativa sulla Privacy."
+newProfile: 
+  title: Il tuo nuovo Profilo
+  subtitle: Qui trovi i tuoi dati anagrafici e di contatto utilizzati da app IO
+  
