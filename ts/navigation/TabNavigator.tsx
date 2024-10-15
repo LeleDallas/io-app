@@ -4,15 +4,16 @@ import React from "react";
 import LoadingSpinnerOverlay from "../components/LoadingSpinnerOverlay";
 import { makeFontStyleObject } from "../components/core/fonts";
 import { TabIconComponent } from "../components/ui/TabIconComponent";
+import { newProfileEnabled } from "../config";
 import { MESSAGES_ROUTES } from "../features/messages/navigation/routes";
 import { MessagesHomeScreen } from "../features/messages/screens/MessagesHomeScreen";
+import NewProfileScreen from "../features/newProfile/screens/NewProfile";
 import { WalletHomeScreen as NewWalletHomeScreen } from "../features/newWallet/screens/WalletHomeScreen";
 import { PaymentsHomeScreen } from "../features/payments/home/screens/PaymentsHomeScreen";
 import { SERVICES_ROUTES } from "../features/services/common/navigation/routes";
 import { ServicesHomeScreen } from "../features/services/home/screens/ServicesHomeScreen";
 import { useBottomTabNavigatorStyle } from "../hooks/useBottomTabNavigatorStyle";
 import I18n from "../i18n";
-import ProfileMainScreen from "../screens/profile/ProfileMainScreen";
 import WalletHomeScreen from "../screens/wallet/WalletHomeScreen";
 import { useIOSelector } from "../store/hooks";
 import {
@@ -162,10 +163,27 @@ export const MainTabNavigator = () => {
             )
           }}
         />
-        {!isSettingsVisibleAndHideProfile && (
+        {/* {!isSettingsVisibleAndHideProfile && (
           <Tab.Screen
             name={ROUTES.PROFILE_MAIN}
             component={ProfileMainScreen}
+            options={{
+              title: I18n.t("global.navigator.profile"),
+              tabBarIcon: ({ color, focused }) => (
+                <TabIconComponent
+                  iconName="navProfile"
+                  iconNameFocused="navProfileFocused"
+                  color={color}
+                  focused={focused}
+                />
+              )
+            }}
+          />
+        )} */}
+        {newProfileEnabled && (
+          <Tab.Screen
+            name={ROUTES.NEW_PROFILE}
+            component={NewProfileScreen}
             options={{
               title: I18n.t("global.navigator.profile"),
               tabBarIcon: ({ color, focused }) => (

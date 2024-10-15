@@ -255,3 +255,6 @@ export const itwEaaVerifierBaseUrl = Config.ITW_EAA_VERIFIER_BASE_URL;
 export const itwBypassIdentityMatch =
   Config.ITW_BYPASS_IDENTITY_MATCH === "YES";
 export const itwIdpHintTest = Config.ITW_IDP_HINT_TEST === "YES";
+
+// ___DEV__ is a global variable that is set to true in development mode
+export const newProfileEnabled = __DEV__;
