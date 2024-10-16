@@ -16,6 +16,7 @@ import {
 import CGN_ROUTES from "../features/bonus/cgn/navigation/routes";
 import { FciStackNavigator } from "../features/fci/navigation/FciStackNavigator";
 import { FCI_ROUTES } from "../features/fci/navigation/routes";
+import { FIMS_ROUTES, FimsNavigator } from "../features/fims/common/navigation";
 import { IdPayBarcodeNavigator } from "../features/idpay/barcode/navigation/navigator";
 import { IdPayBarcodeRoutes } from "../features/idpay/barcode/navigation/routes";
 import { IdPayCodeNavigator } from "../features/idpay/code/navigation/navigator";
@@ -33,12 +34,16 @@ import { IdPayPaymentRoutes } from "../features/idpay/payment/navigation/routes"
 import { IDPayPaymentCodeScanScreen } from "../features/idpay/payment/screens/IDPayPaymentCodeScanScreen";
 import { IdPayUnsubscriptionNavigator } from "../features/idpay/unsubscription/navigation/navigator";
 import { IdPayUnsubscriptionRoutes } from "../features/idpay/unsubscription/navigation/routes";
+import { ItwStackNavigator } from "../features/itwallet/navigation/ItwStackNavigator";
+import { ITW_ROUTES } from "../features/itwallet/navigation/routes";
 import UnsupportedDeviceScreen from "../features/lollipop/screens/UnsupportedDeviceScreen";
 import { MessagesStackNavigator } from "../features/messages/navigation/MessagesNavigator";
 import { MESSAGES_ROUTES } from "../features/messages/navigation/routes";
-import { NOTIFICATIONS_ROUTES } from "../features/pushNotifications/navigation/routes";
+import { MessagesSearchScreen } from "../features/messages/screens/MessagesSearchScreen";
 import { WalletBarcodeNavigator } from "../features/payments/barcode/navigation/navigator";
 import { PaymentsBarcodeRoutes } from "../features/payments/barcode/navigation/routes";
+import { PaymentsTransactionBizEventsNavigator } from "../features/payments/bizEventsTransaction/navigation/navigator";
+import { PaymentsTransactionBizEventsRoutes } from "../features/payments/bizEventsTransaction/navigation/routes";
 import { PaymentsCheckoutNavigator } from "../features/payments/checkout/navigation/navigator";
 import { PaymentsCheckoutRoutes } from "../features/payments/checkout/navigation/routes";
 import { PaymentsMethodDetailsNavigator } from "../features/payments/details/navigation/navigator";
@@ -47,13 +52,14 @@ import { PaymentsOnboardingNavigator } from "../features/payments/onboarding/nav
 import { PaymentsOnboardingRoutes } from "../features/payments/onboarding/navigation/routes";
 import { PaymentsTransactionNavigator } from "../features/payments/transaction/navigation/navigator";
 import { PaymentsTransactionRoutes } from "../features/payments/transaction/navigation/routes";
+import { NOTIFICATIONS_ROUTES } from "../features/pushNotifications/navigation/routes";
+import { SystemNotificationPermissionsScreen } from "../features/pushNotifications/screens/SystemNotificationPermissionsScreen";
 import ServicesNavigator from "../features/services/common/navigation/navigator";
 import { SERVICES_ROUTES } from "../features/services/common/navigation/routes";
+import { SearchScreen } from "../features/services/search/screens/SearchScreen";
 import { ZendeskStackNavigator } from "../features/zendesk/navigation/navigator";
 import ZENDESK_ROUTES from "../features/zendesk/navigation/routes";
 import { GalleryPermissionInstructionsScreen } from "../screens/misc/GalleryPermissionInstructionsScreen";
-import { PaymentsTransactionBizEventsRoutes } from "../features/payments/bizEventsTransaction/navigation/routes";
-import { PaymentsTransactionBizEventsNavigator } from "../features/payments/bizEventsTransaction/navigation/navigator";
 import { useIOSelector } from "../store/hooks";
 import {
   isCdcEnabledSelector,
@@ -62,12 +68,7 @@ import {
   isIdPayEnabledSelector
 } from "../store/reducers/backendStatus";
 import { isGestureEnabled } from "../utils/navigation";
-import { ItwStackNavigator } from "../features/itwallet/navigation/ItwStackNavigator";
-import { ITW_ROUTES } from "../features/itwallet/navigation/routes";
-import { SearchScreen } from "../features/services/search/screens/SearchScreen";
-import { FIMS_ROUTES, FimsNavigator } from "../features/fims/common/navigation";
-import { MessagesSearchScreen } from "../features/messages/screens/MessagesSearchScreen";
-import { SystemNotificationPermissionsScreen } from "../features/pushNotifications/screens/SystemNotificationPermissionsScreen";
+import NewProfileStackNavigator from "../features/newProfile/navigation";
 import CheckEmailNavigator from "./CheckEmailNavigator";
 import OnboardingNavigator from "./OnboardingNavigator";
 import { AppParamsList } from "./params/AppParamsList";
@@ -184,6 +185,12 @@ const AuthenticatedStackNavigator = () => {
           gestureEnabled: isGestureEnabled
         }}
         component={ProfileStackNavigator}
+      />
+
+      <Stack.Screen
+        name={ROUTES.NEW_PROFILE_STACK_NAVIGATOR}
+        options={hideHeaderOptions}
+        component={NewProfileStackNavigator}
       />
 
       <Stack.Screen
