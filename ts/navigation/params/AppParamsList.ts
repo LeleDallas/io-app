@@ -59,6 +59,7 @@ import { SERVICES_ROUTES } from "../../features/services/common/navigation/route
 import { ZendeskParamsList } from "../../features/zendesk/navigation/params";
 import ZENDESK_ROUTES from "../../features/zendesk/navigation/routes";
 import ROUTES from "../routes";
+import { NewProfileNavigatorParamList } from "../../features/newProfile/navigation";
 import { AuthenticationParamsList } from "./AuthenticationParamsList";
 import { CheckEmailParamsList } from "./CheckEmailParamsList";
 import { MainTabParamsList } from "./MainTabParamsList";
@@ -86,6 +87,7 @@ export type AppParamsList = {
   [ROUTES.BARCODE_SCAN]: undefined;
 
   [ROUTES.GALLERY_PERMISSION_INSTRUCTIONS]: undefined;
+  [ROUTES.NEW_PROFILE_STACK_NAVIGATOR]: NavigatorScreenParams<NewProfileNavigatorParamList>;
 
   [CGN_ROUTES.ACTIVATION.MAIN]: NavigatorScreenParams<CgnActivationParamsList>;
   [CGN_ROUTES.DETAILS.MAIN]: NavigatorScreenParams<CgnDetailsParamsList>;
