@@ -13,8 +13,14 @@ import {
 } from "../../../navigation/params/AppParamsList";
 import { MainTabParamsList } from "../../../navigation/params/MainTabParamsList";
 import { useIODispatch, useIOSelector, useIOStore } from "../../../store/hooks";
+import { useOnFirstRender } from "../../../utils/hooks/useOnFirstRender";
 import { cgnDetails } from "../../bonus/cgn/store/actions/details";
 import { idPayWalletGet } from "../../idpay/wallet/store/actions";
+import {
+  trackAllCredentialProfileProperties,
+  trackOpenWalletScreen,
+  trackWalletAdd
+} from "../../itwallet/analytics";
 import { ITW_ROUTES } from "../../itwallet/navigation/routes";
 import { getPaymentsWalletUserMethods } from "../../payments/wallet/store/actions";
 import { WalletCardsContainer } from "../components/WalletCardsContainer";
@@ -22,12 +28,8 @@ import { WalletCategoryFilterTabs } from "../components/WalletCategoryFilterTabs
 import { WalletPaymentsRedirectBanner } from "../components/WalletPaymentsRedirectBanner";
 import { walletToggleLoadingState } from "../store/actions/placeholders";
 import { selectWalletCards } from "../store/selectors";
-import {
-  trackAllCredentialProfileProperties,
-  trackOpenWalletScreen,
-  trackWalletAdd
-} from "../../itwallet/analytics";
-import { useOnFirstRender } from "../../../utils/hooks/useOnFirstRender";
+import ROUTES from "../../../navigation/routes";
+import { newProfileEnabled } from "../../../config";
 
 type Props = IOStackNavigationRouteProps<MainTabParamsList, "WALLET_HOME">;
 
@@ -89,6 +91,12 @@ const WalletScrollView = ({ children }: React.PropsWithChildren<any>) => {
     });
   };
 
+  const handleDeleteProfileButtonPress = () => {
+    navigation.navigate(ROUTES.NEW_PROFILE_STACK_NAVIGATOR, {
+      screen: ROUTES.NEW_PROFILE_DELETE_SCREEN
+    });
+  };
+
   if (cards.length === 0) {
     return (
       <ScrollView
@@ -112,6 +120,18 @@ const WalletScrollView = ({ children }: React.PropsWithChildren<any>) => {
         iconPosition: "end",
         onPress: handleAddToWalletButtonPress
       }}
+      secondaryActionProps={
+        newProfileEnabled
+          ? {
+              testID: "walletDeleteProfileButtonTestID",
+              label: I18n.t("newProfile.deleteFlow.title"),
+              accessibilityLabel: I18n.t("newProfile.deleteFlow.title"),
+              icon: "trashcan",
+              iconPosition: "end",
+              onPress: handleDeleteProfileButtonPress
+            }
+          : undefined
+      }
       excludeSafeAreaMargins={true}
     >
       {children}
